@@ -1,4 +1,4 @@
-# v1.00 20260618 23:35
+# v1.01 20260618 23:45
 # Visual Studio / MSBuild
 bin/
 obj/
@@ -16,4 +16,17 @@ PortableAlarmClock.exe
 # App Data / Local Database
 AlarmClockData/
 
-# v1.00 20260618 23:35
+# Security & Credentials
+.env
+.env.*
+*.key
+*.pem
+*.pfx
+secrets.*
+
+# OS / IDE temp files
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# v1.01 20260618 23:45
