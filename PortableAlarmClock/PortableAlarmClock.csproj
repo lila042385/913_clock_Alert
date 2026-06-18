@@ -1,17 +1,13 @@
-<!-- v1.02 20260619 08:20 - Added clock icon -->
+<!-- v1.06 20260618 23:55 - Upgraded System.Text.Json to 8.0.5 and cleaned up Fody references -->
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishTrimmed>false</PublishTrimmed>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>clock_icon.ico</ApplicationIcon>
   </PropertyGroup>
@@ -20,5 +16,10 @@
     <Resource Include="clock_icon.ico" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="Costura.Fody" Version="5.7.0" PrivateAssets="all" />
+  </ItemGroup>
+
 </Project>
-<!-- v1.02 20260619 08:20 - Added clock icon -->
+<!-- v1.06 20260618 23:55 - Upgraded System.Text.Json to 8.0.5 and cleaned up Fody references -->
