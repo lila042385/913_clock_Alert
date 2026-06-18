@@ -1,4 +1,4 @@
-# v1.01 20260618 23:45
+# v1.03 20260618 23:49
 # Visual Studio / MSBuild
 bin/
 obj/
@@ -9,8 +9,8 @@ obj/
 *.sln.docstates
 
 # Executables & Large Files
-PortableAlarmClock.exe
 *.exe
+!PortableAlarmClock.exe
 *.pdb
 
 # App Data / Local Database
@@ -29,4 +29,4 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
-# v1.01 20260618 23:45
+# v1.03 20260618 23:49
