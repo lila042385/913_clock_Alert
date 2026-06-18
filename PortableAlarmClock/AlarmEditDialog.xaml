@@ -1,0 +1,336 @@
+<!-- v1.01 20260618 00:38 -->
+<Window x:Class="PortableAlarmClock.AlarmEditDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="&#x30A2;&#x30E9;&#x30FC;&#x30E0;&#x306E;&#x7DE8;&#x96C6;" 
+        Height="560" Width="440"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        BorderThickness="1"
+        BorderBrush="{DynamicResource BorderBrush}">
+    
+    <Window.Resources>
+        <!-- Weekday ToggleButton Circle Style -->
+        <Style x:Key="WeekdayToggleStyle" TargetType="ToggleButton">
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Grid>
+                            <Ellipse x:Name="BgEllipse" 
+                                     Fill="{TemplateBinding Background}" 
+                                     Stroke="{TemplateBinding BorderBrush}" 
+                                     StrokeThickness="{TemplateBinding BorderThickness}"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BgEllipse" Property="Fill" Value="{DynamicResource ButtonHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="BgEllipse" Property="Fill" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter TargetName="BgEllipse" Property="Stroke" Value="{DynamicResource AccentBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Standard Button Style -->
+        <Style x:Key="DialogButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="15,6"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border" 
+                                CornerRadius="4" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource ButtonPressedBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Accent Button Style -->
+        <Style x:Key="AccentButtonStyle" TargetType="Button" BasedOn="{StaticResource DialogButtonStyle}">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border" 
+                                CornerRadius="4" 
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ComboBox ToggleButton Template (Dark mode compatible) -->
+        <ControlTemplate x:Key="ComboBoxToggleButtonTemplate" TargetType="ToggleButton">
+            <Border x:Name="Border" CornerRadius="4"
+                    Background="{DynamicResource CardBackgroundBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}" 
+                    BorderThickness="1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="24"/>
+                    </Grid.ColumnDefinitions>
+                    <Path x:Name="Arrow" Grid.Column="1"
+                          Data="M 0 0 L 4 4 L 8 0 Z"
+                          Fill="{DynamicResource TextSecondaryBrush}"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <!-- Themed ComboBox Style (Dark mode popup support) -->
+        <Style x:Key="ThemedComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                        <Setter Property="Padding" Value="10,6"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ComboBoxItem">
+                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" 
+                                            Padding="{TemplateBinding Padding}" CornerRadius="2">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsHighlighted" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton"
+                                          Template="{StaticResource ComboBoxToggleButtonTemplate}"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          Focusable="False" ClickMode="Press"/>
+                            <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              Margin="10,0,28,0"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                            <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" 
+                                   Placement="Bottom" AllowsTransparency="True" Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Grid x:Name="DropDown" SnapsToDevicePixels="True"
+                                      MinWidth="{TemplateBinding ActualWidth}"
+                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" 
+                                            Background="{DynamicResource CardBackgroundBrush}" 
+                                            BorderBrush="{DynamicResource BorderBrush}" 
+                                            BorderThickness="1" CornerRadius="4"
+                                            Margin="0,2,0,0">
+                                        <ScrollViewer SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Time ComboBox Style (extends themed style) -->
+        <Style x:Key="TimeComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource ThemedComboBoxStyle}">
+            <Setter Property="Width" Value="80"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5,0"/>
+        </Style>
+    </Window.Resources>
+
+    <Border BorderThickness="1" CornerRadius="8" Background="{DynamicResource WindowBackgroundBrush}">
+        <Grid Margin="28,24,28,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>   <!-- Title -->
+                <RowDefinition Height="Auto"/>   <!-- Time Select -->
+                <RowDefinition Height="*"/>      <!-- Fields -->
+                <RowDefinition Height="Auto"/>   <!-- Action Buttons -->
+            </Grid.RowDefinitions>
+
+            <!-- 1. Title -->
+            <TextBlock x:Name="TitleTextBlock" 
+                       Text="&#x30A2;&#x30E9;&#x30FC;&#x30E0;&#x306E;&#x8FFD;&#x52A0;" 
+                       FontSize="20" 
+                       FontWeight="SemiBold" 
+                       Margin="0,0,0,20"
+                       Foreground="{DynamicResource TextPrimaryBrush}"/>
+
+            <!-- 2. Time Selector (Hour & Minute) -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,28">
+                <ComboBox x:Name="HourComboBox" Style="{StaticResource TimeComboBoxStyle}" Margin="0,0,8,0" MaxDropDownHeight="150"/>
+                <TextBlock Text=":" FontSize="28" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0"
+                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+                <ComboBox x:Name="MinuteComboBox" Style="{StaticResource TimeComboBoxStyle}" MaxDropDownHeight="150"/>
+            </StackPanel>
+
+            <!-- 3. Scrollable Input Fields -->
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0,0,0,20">
+                <StackPanel>
+                    <!-- Alarm Name -->
+                    <TextBlock Text="&#x30A2;&#x30E9;&#x30FC;&#x30E0;&#x540D;" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"
+                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <TextBox x:Name="TitleTextBox" 
+                             Height="36" 
+                             Padding="10,6" 
+                             FontSize="14"
+                             Background="{DynamicResource CardBackgroundBrush}" 
+                             Foreground="{DynamicResource TextPrimaryBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}"
+                             BorderThickness="1"
+                             CaretBrush="{DynamicResource TextPrimaryBrush}"
+                             Margin="0,0,0,20">
+                        <TextBox.Resources>
+                            <!-- Custom styling for TextBox CornerRadius -->
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="4"/>
+                            </Style>
+                        </TextBox.Resources>
+                    </TextBox>
+
+                    <!-- Weekdays Repeats -->
+                    <TextBlock Text="&#x7E70;&#x308A;&#x8FD4;&#x3057;" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"
+                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,20">
+                        <ToggleButton x:Name="SunToggle" Content="&#x65E5;" Style="{StaticResource WeekdayToggleStyle}"/>
+                        <ToggleButton x:Name="MonToggle" Content="&#x6708;" Style="{StaticResource WeekdayToggleStyle}"/>
+                        <ToggleButton x:Name="TueToggle" Content="&#x706B;" Style="{StaticResource WeekdayToggleStyle}"/>
+                        <ToggleButton x:Name="WedToggle" Content="&#x6C34;" Style="{StaticResource WeekdayToggleStyle}"/>
+                        <ToggleButton x:Name="ThuToggle" Content="&#x6728;" Style="{StaticResource WeekdayToggleStyle}"/>
+                        <ToggleButton x:Name="FriToggle" Content="&#x91D1;" Style="{StaticResource WeekdayToggleStyle}"/>
+                        <ToggleButton x:Name="SatToggle" Content="&#x571F;" Style="{StaticResource WeekdayToggleStyle}"/>
+                    </StackPanel>
+
+                    <!-- Sound Selection -->
+                    <TextBlock Text="&#x30A2;&#x30E9;&#x30FC;&#x30E0;&#x97F3;" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"
+                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <ComboBox x:Name="SoundComboBox" 
+                              Style="{StaticResource ThemedComboBoxStyle}"
+                              MaxDropDownHeight="150"
+                              Margin="0,0,0,20"/>
+
+                    <!-- Snooze Selection -->
+                    <TextBlock Text="&#x30B9;&#x30CC;&#x30FC;&#x30BA;" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8"
+                               Foreground="{DynamicResource TextPrimaryBrush}"/>
+                    <ComboBox x:Name="SnoozeComboBox" 
+                              Style="{StaticResource ThemedComboBoxStyle}"
+                              MaxDropDownHeight="150"
+                              Margin="0,0,0,20"/>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- 4. Footer Buttons -->
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>   <!-- Delete -->
+                    <ColumnDefinition Width="*"/>      <!-- Spacer -->
+                    <ColumnDefinition Width="Auto"/>   <!-- Save & Cancel -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Delete Button (only visible during edit) -->
+                <Button x:Name="DeleteButton" 
+                        Content="&#x524A;&#x9664;" 
+                        Style="{StaticResource DialogButtonStyle}" 
+                        Click="DeleteButton_Click" 
+                        Visibility="Collapsed"/>
+
+                <!-- Save & Cancel Button Group -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Button x:Name="SaveButton" 
+                            Content="&#x4FDD;&#x5B58;" 
+                            Style="{StaticResource AccentButtonStyle}" 
+                            Click="SaveButton_Click" 
+                            Margin="0,0,8,0"/>
+                    <Button x:Name="CancelButton" 
+                            Content="&#x30AD;&#x30E3;&#x30F3;&#x30BB;&#x30EB;" 
+                            Style="{StaticResource DialogButtonStyle}" 
+                            Click="CancelButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
+<!-- v1.01 20260618 00:38 -->

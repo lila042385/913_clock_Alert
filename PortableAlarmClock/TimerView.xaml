@@ -1,0 +1,222 @@
+<!-- v1.00 20260619 08:24 -->
+<UserControl x:Class="PortableAlarmClock.TimerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource WindowBackgroundBrush}"
+             Foreground="{DynamicResource TextPrimaryBrush}">
+
+    <UserControl.Resources>
+        <!-- Circular Button Style -->
+        <Style x:Key="CircleButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="56"/>
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Ellipse x:Name="BgEllipse" Fill="{TemplateBinding Background}"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BgEllipse" Property="Fill" Value="{DynamicResource AccentHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BgEllipse" Property="Fill" Value="{DynamicResource AccentPressedBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Secondary Circle Button Style -->
+        <Style x:Key="SecondaryCircleButtonStyle" TargetType="Button" BasedOn="{StaticResource CircleButtonStyle}">
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Ellipse x:Name="BgEllipse" Fill="{TemplateBinding Background}" 
+                                     Stroke="{DynamicResource BorderBrush}" StrokeThickness="1"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BgEllipse" Property="Fill" Value="{DynamicResource ButtonHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BgEllipse" Property="Fill" Value="{DynamicResource ButtonPressedBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Spinner Up/Down Button Style -->
+        <Style x:Key="SpinnerButtonStyle" TargetType="RepeatButton">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Interval" Value="120"/>
+            <Setter Property="Delay" Value="400"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RepeatButton">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonPressedBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="24,24,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>   <!-- Header -->
+            <RowDefinition Height="*"/>      <!-- Timer Display -->
+            <RowDefinition Height="Auto"/>   <!-- Buttons -->
+        </Grid.RowDefinitions>
+
+        <!-- 1. Header -->
+        <TextBlock Text="&#x30BF;&#x30A4;&#x30DE;&#x30FC;" 
+                   FontSize="28" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,20"
+                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+
+        <!-- 2. Timer Display Area -->
+        <Grid Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <!-- Circular Progress Ring (visible during countdown) -->
+            <Canvas x:Name="ProgressCanvas" Width="280" Height="280">
+                <!-- Background ring -->
+                <Ellipse Width="280" Height="280" 
+                         Stroke="{DynamicResource CardBorderBrush}" 
+                         StrokeThickness="6" 
+                         Fill="Transparent"/>
+                <!-- Progress arc -->
+                <Path x:Name="ProgressArc" 
+                      Stroke="{DynamicResource AccentBrush}" 
+                      StrokeThickness="6" 
+                      StrokeStartLineCap="Round"
+                      StrokeEndLineCap="Round"
+                      Fill="Transparent"/>
+            </Canvas>
+
+            <!-- Time Setting Panel (visible when idle) -->
+            <StackPanel x:Name="TimeSettingPanel" Orientation="Horizontal" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- Hours -->
+                <StackPanel HorizontalAlignment="Center">
+                    <RepeatButton x:Name="HourUpButton" Style="{StaticResource SpinnerButtonStyle}" Click="HourUpButton_Click">
+                        <TextBlock Text="&#xE70E;" FontFamily="Segoe MDL2 Assets" FontSize="14" 
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </RepeatButton>
+                    <TextBlock x:Name="HourText" Text="00" FontSize="52" FontWeight="Bold" 
+                               HorizontalAlignment="Center" MinWidth="65" TextAlignment="Center"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               MouseWheel="HourText_MouseWheel"/>
+                    <RepeatButton x:Name="HourDownButton" Style="{StaticResource SpinnerButtonStyle}" Click="HourDownButton_Click">
+                        <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </RepeatButton>
+                    <TextBlock Text="&#x6642;&#x9593;" FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,0"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                </StackPanel>
+
+                <TextBlock Text=":" FontSize="52" FontWeight="Bold" VerticalAlignment="Top" Margin="4,0"
+                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+
+                <!-- Minutes -->
+                <StackPanel HorizontalAlignment="Center">
+                    <RepeatButton x:Name="MinuteUpButton" Style="{StaticResource SpinnerButtonStyle}" Click="MinuteUpButton_Click">
+                        <TextBlock Text="&#xE70E;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </RepeatButton>
+                    <TextBlock x:Name="MinuteText" Text="00" FontSize="52" FontWeight="Bold" 
+                               HorizontalAlignment="Center" MinWidth="65" TextAlignment="Center"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               MouseWheel="MinuteText_MouseWheel"/>
+                    <RepeatButton x:Name="MinuteDownButton" Style="{StaticResource SpinnerButtonStyle}" Click="MinuteDownButton_Click">
+                        <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </RepeatButton>
+                    <TextBlock Text="&#x5206;" FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,0"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                </StackPanel>
+
+                <TextBlock Text=":" FontSize="52" FontWeight="Bold" VerticalAlignment="Top" Margin="4,0"
+                           Foreground="{DynamicResource TextPrimaryBrush}"/>
+
+                <!-- Seconds -->
+                <StackPanel HorizontalAlignment="Center">
+                    <RepeatButton x:Name="SecondUpButton" Style="{StaticResource SpinnerButtonStyle}" Click="SecondUpButton_Click">
+                        <TextBlock Text="&#xE70E;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </RepeatButton>
+                    <TextBlock x:Name="SecondText" Text="00" FontSize="52" FontWeight="Bold" 
+                               HorizontalAlignment="Center" MinWidth="65" TextAlignment="Center"
+                               Foreground="{DynamicResource TextPrimaryBrush}"
+                               MouseWheel="SecondText_MouseWheel"/>
+                    <RepeatButton x:Name="SecondDownButton" Style="{StaticResource SpinnerButtonStyle}" Click="SecondDownButton_Click">
+                        <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                   Foreground="{DynamicResource TextSecondaryBrush}"/>
+                    </RepeatButton>
+                    <TextBlock Text="&#x79D2;" FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,0"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Countdown Display (visible when running/paused) -->
+            <TextBlock x:Name="CountdownText" Text="00:00:00" 
+                       FontSize="56" FontWeight="Bold" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Visibility="Collapsed"/>
+        </Grid>
+
+        <!-- 3. Control Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" 
+                    Margin="0,24,0,16">
+            <!-- Reset Button -->
+            <Button x:Name="ResetButton" Style="{StaticResource SecondaryCircleButtonStyle}"
+                    Margin="0,0,24,0" Visibility="Collapsed" Click="ResetButton_Click">
+                <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="18"/>
+            </Button>
+
+            <!-- Start/Pause Button -->
+            <Button x:Name="StartPauseButton" Style="{StaticResource CircleButtonStyle}" 
+                    Width="72" Height="72" Click="StartPauseButton_Click">
+                <TextBlock x:Name="StartPauseIcon" Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="24"/>
+            </Button>
+
+            <!-- (placeholder for symmetry) -->
+            <Border Width="56" Height="56" Margin="24,0,0,0" x:Name="PlaceholderRight" Visibility="Collapsed"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
+<!-- v1.00 20260619 08:24 -->

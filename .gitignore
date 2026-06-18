@@ -1,0 +1,19 @@
+# v1.00 20260618 23:35
+# Visual Studio / MSBuild
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Executables & Large Files
+PortableAlarmClock.exe
+*.exe
+*.pdb
+
+# App Data / Local Database
+AlarmClockData/
+
+# v1.00 20260618 23:35

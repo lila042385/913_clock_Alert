@@ -1,0 +1,114 @@
+<!-- v1.03 20260619 08:24 - Shell with sidebar navigation -->
+<Window x:Class="PortableAlarmClock.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:PortableAlarmClock"
+        Title="&#x30DD;&#x30FC;&#x30BF;&#x30D6;&#x30EB; &#x30A2;&#x30E9;&#x30FC;&#x30E0; &#x30AF;&#x30ED;&#x30C3;&#x30AF;" 
+        Height="600" Width="620"
+        MinWidth="520" MinHeight="450"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        Foreground="{DynamicResource TextPrimaryBrush}"
+        Icon="clock_icon.ico"
+        Closing="Window_Closing">
+
+    <Window.Resources>
+        <!-- Navigation Button Style -->
+        <Style x:Key="NavButtonStyle" TargetType="RadioButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="GroupName" Value="NavGroup"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="NavBorder" Background="{TemplateBinding Background}" 
+                                CornerRadius="6" Margin="6,2">
+                            <Grid>
+                                <!-- Accent indicator bar (left edge) -->
+                                <Border x:Name="AccentBar" Width="3" Height="20" 
+                                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                                        CornerRadius="1.5" Margin="-2,0,0,0"
+                                        Background="{DynamicResource AccentBrush}"
+                                        Visibility="Collapsed"/>
+                                <ContentPresenter Margin="{TemplateBinding Padding}" 
+                                                  VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="NavBorder" Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="NavBorder" Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                                <Setter TargetName="AccentBar" Property="Visibility" Value="Visible"/>
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <!-- Navigation sidebar -->
+            <ColumnDefinition Width="Auto"/>
+            <!-- Content area -->
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 1. Left Sidebar Navigation -->
+        <Border Grid.Column="0" Width="180"
+                Background="{DynamicResource WindowBackgroundBrush}"
+                BorderBrush="{DynamicResource CardBorderBrush}"
+                BorderThickness="0,0,1,0">
+            <StackPanel Margin="0,16,0,0">
+                <!-- Alarm Tab -->
+                <RadioButton x:Name="AlarmNavButton" 
+                             Style="{StaticResource NavButtonStyle}" 
+                             IsChecked="True"
+                             Checked="NavButton_Checked"
+                             Tag="Alarm">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE7ED;" FontFamily="Segoe MDL2 Assets" FontSize="18" 
+                                   VerticalAlignment="Center" Width="28"/>
+                        <TextBlock Text="&#x30A2;&#x30E9;&#x30FC;&#x30E0;" FontSize="14" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </RadioButton>
+
+                <!-- Timer Tab -->
+                <RadioButton x:Name="TimerNavButton" 
+                             Style="{StaticResource NavButtonStyle}"
+                             Checked="NavButton_Checked"
+                             Tag="Timer">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="18" 
+                                   VerticalAlignment="Center" Width="28"/>
+                        <TextBlock Text="&#x30BF;&#x30A4;&#x30DE;&#x30FC;" FontSize="14" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </RadioButton>
+
+                <!-- Stopwatch Tab -->
+                <RadioButton x:Name="StopwatchNavButton" 
+                             Style="{StaticResource NavButtonStyle}"
+                             Checked="NavButton_Checked"
+                             Tag="Stopwatch">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE81A;" FontFamily="Segoe MDL2 Assets" FontSize="18" 
+                                   VerticalAlignment="Center" Width="28"/>
+                        <TextBlock Text="&#x30B9;&#x30C8;&#x30C3;&#x30D7;&#x30A6;&#x30A9;&#x30C3;&#x30C1;" FontSize="14" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </RadioButton>
+            </StackPanel>
+        </Border>
+
+        <!-- 2. Content Area -->
+        <ContentControl x:Name="ContentArea" Grid.Column="1"/>
+    </Grid>
+</Window>
+<!-- v1.03 20260619 08:24 - Shell with sidebar navigation -->
