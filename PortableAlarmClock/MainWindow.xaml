@@ -1,4 +1,4 @@
-<!-- v1.03 20260619 08:24 - Shell with sidebar navigation -->
+<!-- v1.04 20260620 00:52 - Custom titlebar with tray button -->
 <Window x:Class="PortableAlarmClock.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,7 +10,18 @@
         Background="{DynamicResource WindowBackgroundBrush}"
         Foreground="{DynamicResource TextPrimaryBrush}"
         Icon="clock_icon.ico"
+        WindowStyle="None"
+        AllowsTransparency="False"
+        ResizeMode="CanResizeWithGrip"
         Closing="Window_Closing">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="36"
+                      ResizeBorderThickness="6"
+                      GlassFrameThickness="0"
+                      CornerRadius="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
 
     <Window.Resources>
         <!-- Navigation Button Style -->
@@ -52,63 +63,162 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- Titlebar Button Style -->
+        <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="BtnBorder" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BtnBorder" Property="Background" Value="{DynamicResource ButtonHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BtnBorder" Property="Background" Value="{DynamicResource ButtonPressedBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Close Button Style (red hover) -->
+        <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="BtnBorder" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BtnBorder" Property="Background" Value="#E81123"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BtnBorder" Property="Background" Value="#B2001A"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <!-- Navigation sidebar -->
-            <ColumnDefinition Width="Auto"/>
-            <!-- Content area -->
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <!-- Custom Titlebar -->
+            <RowDefinition Height="36"/>
+            <!-- Content -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-        <!-- 1. Left Sidebar Navigation -->
-        <Border Grid.Column="0" Width="180"
-                Background="{DynamicResource WindowBackgroundBrush}"
-                BorderBrush="{DynamicResource CardBorderBrush}"
-                BorderThickness="0,0,1,0">
-            <StackPanel Margin="0,16,0,0">
-                <!-- Alarm Tab -->
-                <RadioButton x:Name="AlarmNavButton" 
-                             Style="{StaticResource NavButtonStyle}" 
-                             IsChecked="True"
-                             Checked="NavButton_Checked"
-                             Tag="Alarm">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE7ED;" FontFamily="Segoe MDL2 Assets" FontSize="18" 
-                                   VerticalAlignment="Center" Width="28"/>
-                        <TextBlock Text="&#x30A2;&#x30E9;&#x30FC;&#x30E0;" FontSize="14" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </RadioButton>
+        <!-- Custom Titlebar -->
+        <Grid Grid.Row="0" Background="{DynamicResource WindowBackgroundBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-                <!-- Timer Tab -->
-                <RadioButton x:Name="TimerNavButton" 
-                             Style="{StaticResource NavButtonStyle}"
-                             Checked="NavButton_Checked"
-                             Tag="Timer">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="18" 
-                                   VerticalAlignment="Center" Width="28"/>
-                        <TextBlock Text="&#x30BF;&#x30A4;&#x30DE;&#x30FC;" FontSize="14" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </RadioButton>
-
-                <!-- Stopwatch Tab -->
-                <RadioButton x:Name="StopwatchNavButton" 
-                             Style="{StaticResource NavButtonStyle}"
-                             Checked="NavButton_Checked"
-                             Tag="Stopwatch">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE81A;" FontFamily="Segoe MDL2 Assets" FontSize="18" 
-                                   VerticalAlignment="Center" Width="28"/>
-                        <TextBlock Text="&#x30B9;&#x30C8;&#x30C3;&#x30D7;&#x30A6;&#x30A9;&#x30C3;&#x30C1;" FontSize="14" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </RadioButton>
+            <!-- App Icon & Title -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="10,0,0,0" VerticalAlignment="Center">
+                <Image Source="clock_icon.ico" Width="16" Height="16" Margin="0,0,8,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <TextBlock Text="&#x30DD;&#x30FC;&#x30BF;&#x30D6;&#x30EB; &#x30A2;&#x30E9;&#x30FC;&#x30E0; &#x30AF;&#x30ED;&#x30C3;&#x30AF;" 
+                           FontSize="12" VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextSecondaryBrush}"/>
             </StackPanel>
-        </Border>
 
-        <!-- 2. Content Area -->
-        <ContentControl x:Name="ContentArea" Grid.Column="1"/>
+            <!-- Window Control Buttons -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <!-- Minimize Button -->
+                <Button x:Name="MinimizeButton" Style="{StaticResource TitleBarButtonStyle}" 
+                        Click="MinimizeButton_Click" ToolTip="&#x6700;&#x5C0F;&#x5316;">
+                    <TextBlock Text="&#xE921;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
+                </Button>
+
+                <!-- Tray Button (minimize to system tray) -->
+                <Button x:Name="TrayButton" Style="{StaticResource TitleBarButtonStyle}" 
+                        Click="TrayButton_Click" ToolTip="&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x30C8;&#x30EC;&#x30A4;&#x306B;&#x683C;&#x7D0D;">
+                    <TextBlock Text="&#xE7E8;" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
+                </Button>
+
+                <!-- Close Button -->
+                <Button x:Name="CloseButton" Style="{StaticResource CloseButtonStyle}" 
+                        Click="CloseButton_Click" ToolTip="&#x9589;&#x3058;&#x308B;">
+                    <TextBlock Text="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="10"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <!-- Navigation sidebar -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- Content area -->
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 1. Left Sidebar Navigation -->
+            <Border Grid.Column="0" Width="180"
+                    Background="{DynamicResource WindowBackgroundBrush}"
+                    BorderBrush="{DynamicResource CardBorderBrush}"
+                    BorderThickness="0,0,1,0">
+                <StackPanel Margin="0,16,0,0">
+                    <!-- Alarm Tab -->
+                    <RadioButton x:Name="AlarmNavButton" 
+                                 Style="{StaticResource NavButtonStyle}" 
+                                 IsChecked="True"
+                                 Checked="NavButton_Checked"
+                                 Tag="Alarm">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE7ED;" FontFamily="Segoe MDL2 Assets" FontSize="18" 
+                                       VerticalAlignment="Center" Width="28"/>
+                            <TextBlock Text="&#x30A2;&#x30E9;&#x30FC;&#x30E0;" FontSize="14" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <!-- Timer Tab -->
+                    <RadioButton x:Name="TimerNavButton" 
+                                 Style="{StaticResource NavButtonStyle}"
+                                 Checked="NavButton_Checked"
+                                 Tag="Timer">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="18" 
+                                       VerticalAlignment="Center" Width="28"/>
+                            <TextBlock Text="&#x30BF;&#x30A4;&#x30DE;&#x30FC;" FontSize="14" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+
+                    <!-- Stopwatch Tab -->
+                    <RadioButton x:Name="StopwatchNavButton" 
+                                 Style="{StaticResource NavButtonStyle}"
+                                 Checked="NavButton_Checked"
+                                 Tag="Stopwatch">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE81A;" FontFamily="Segoe MDL2 Assets" FontSize="18" 
+                                       VerticalAlignment="Center" Width="28"/>
+                            <TextBlock Text="&#x30B9;&#x30C8;&#x30C3;&#x30D7;&#x30A6;&#x30A9;&#x30C3;&#x30C1;" FontSize="14" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+            </Border>
+
+            <!-- 2. Content Area -->
+            <ContentControl x:Name="ContentArea" Grid.Column="1"/>
+        </Grid>
     </Grid>
 </Window>
-<!-- v1.03 20260619 08:24 - Shell with sidebar navigation -->
+<!-- v1.04 20260620 00:52 - Custom titlebar with tray button -->

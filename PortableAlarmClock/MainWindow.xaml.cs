@@ -1,4 +1,4 @@
-// v1.04 20260619 08:24 - Shell with tab navigation
+// v1.05 20260620 00:52 - Custom titlebar handlers + balloon notification
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -64,6 +64,36 @@ namespace PortableAlarmClock
             }
         }
 
+        #region Custom Titlebar Handlers
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void TrayButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            Logger.Info("Window hidden via tray button (minimized to system tray).");
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show(
+                "\u30a2\u30d7\u30ea\u3092\u7d42\u4e86\u3059\u308b\u3068\u3001\u8a2d\u5b9a\u3057\u305f\u30a2\u30e9\u30fc\u30e0\u306f\u9cf4\u308a\u307e\u305b\u3093\u3002\u7d42\u4e86\u3057\u307e\u3059\u304b\uff1f",
+                "\u30dd\u30fc\u30bf\u30d6\u30eb \u30a2\u30e9\u30fc\u30e0 \u30af\u30ed\u30c3\u30af",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                _isExplicitClose = true;
+                this.Close();
+            }
+        }
+
+        #endregion
+
         #region Navigation
 
         private void NavButton_Checked(object sender, RoutedEventArgs e)
@@ -123,6 +153,11 @@ namespace PortableAlarmClock
                 try
                 {
                     Logger.Info($"Opening AlarmAlertWindow for: {alarm.Id}");
+
+                    // Show Windows balloon notification
+                    string notifTitle = string.IsNullOrWhiteSpace(alarm.Title) ? "\u30a2\u30e9\u30fc\u30e0" : alarm.Title;
+                    _trayIcon?.ShowBalloonNotification(notifTitle, $"{alarm.TimeString} - \u30a2\u30e9\u30fc\u30e0\u6642\u523b\u3067\u3059");
+
                     var alertWindow = new AlarmAlertWindow(alarm)
                     {
                         Owner = this
@@ -235,4 +270,5 @@ namespace PortableAlarmClock
         #endregion
     }
 }
+// v1.05 20260620 00:52 - Custom titlebar handlers + balloon notification
 // v1.04 20260619 08:24 - Shell with tab navigation

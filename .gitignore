@@ -1,3 +1,7 @@
+# v1.05 20260620 02:25
+# - task.md を除外リストに追加
+# v1.04 20260620 02:22
+# - publish_out/ を除外リストに追加
 # v1.03 20260618 23:49
 # Visual Studio / MSBuild
 bin/
@@ -27,6 +31,10 @@ secrets.*
 # OS / IDE temp files
 Thumbs.db
 desktop.ini
-.DS_Store
+# Build Output
+publish_out/
 
-# v1.03 20260618 23:49
+# Local Task Management
+task.md
+
+# v1.05 20260620 02:25

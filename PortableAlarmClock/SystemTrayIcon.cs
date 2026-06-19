@@ -1,4 +1,4 @@
-// v1.02 20260619 08:20 - Custom clock icon
+// v1.03 20260620 00:52 - Balloon notification support
 using System;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -16,6 +16,11 @@ namespace PortableAlarmClock
         private const int NIF_MESSAGE = 0x00000001;
         private const int NIF_ICON = 0x00000002;
         private const int NIF_TIP = 0x00000004;
+        private const int NIF_INFO = 0x00000010;
+
+        // Balloon icon flags
+        private const int NIIF_NONE = 0x00000000;
+        private const int NIIF_INFO = 0x00000001;
 
         private const int WM_USER = 0x0400;
         public const int WM_TRAYICON = WM_USER + 256;
@@ -269,10 +274,47 @@ namespace PortableAlarmClock
             }
         }
 
+        /// <summary>
+        /// Show a balloon notification from the system tray icon.
+        /// </summary>
+        public void ShowBalloonNotification(string title, string message)
+        {
+            if (!_isCreated) return;
+
+            try
+            {
+                var nid = new NOTIFYICONDATA
+                {
+                    cbSize = Marshal.SizeOf<NOTIFYICONDATA>(),
+                    hWnd = _hWnd,
+                    uID = _uid,
+                    uFlags = NIF_INFO,
+                    szInfoTitle = title ?? string.Empty,
+                    szInfo = message ?? string.Empty,
+                    dwInfoFlags = NIIF_INFO
+                };
+
+                bool result = Shell_NotifyIcon(NIM_MODIFY, ref nid);
+                if (result)
+                {
+                    Logger.Info($"Balloon notification shown: {title}");
+                }
+                else
+                {
+                    Logger.Error("Failed to show balloon notification via Shell_NotifyIcon.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Exception showing balloon notification.", ex);
+            }
+        }
+
         public void Dispose()
         {
             Remove();
         }
     }
 }
+// v1.03 20260620 00:52 - Balloon notification support
 // v1.02 20260619 08:20 - Custom clock icon
