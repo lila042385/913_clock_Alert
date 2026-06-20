@@ -1,3 +1,5 @@
+// v1.01 20260620 10:25
+// 履歴: 生成WAV波形を30秒に拡張し、15秒かけて音量が徐々に大きくなるフェードイン処理を追加
 // v1.00 20260617 23:40
 using System;
 using System.IO;
@@ -67,12 +69,13 @@ namespace PortableAlarmClock
 
         private static MemoryStream GenerateAlarmWavStream()
         {
-            // Generates a 2-second beep sound (monaural, 44100Hz, 16-bit PCM)
-            // Pattern: 4 beeps (0.1s sound, 0.1s silence) followed by 1.2s silence. Total 2.0s.
+            // Generates a 30-second beep sound (monaural, 44100Hz, 16-bit PCM)
+            // Pattern: 4 beeps (0.1s sound, 0.1s silence) followed by 1.2s silence per 2.0s cycle.
+            // Volume fades in over 15 seconds.
             int sampleRate = 44100;
             int bitsPerSample = 16;
             int channels = 1;
-            double durationSeconds = 2.0;
+            double durationSeconds = 30.0;
             int numSamples = (int)(sampleRate * durationSeconds);
             int dataLength = numSamples * channels * (bitsPerSample / 8);
 
@@ -113,20 +116,13 @@ namespace PortableAlarmClock
                 double time = (double)i / sampleRate;
                 short value = 0;
 
-                // Determine if we should play sound based on pattern (4 beeps of 0.1s on / 0.1s off)
-                // 0.0 - 0.1s: ON
-                // 0.1 - 0.2s: OFF
-                // 0.2 - 0.3s: ON
-                // 0.3 - 0.4s: OFF
-                // 0.4 - 0.5s: ON
-                // 0.5 - 0.6s: OFF
-                // 0.6 - 0.7s: ON
-                // 0.7 - 2.0s: OFF
+                // 2秒ごとのループ周期で鳴動を判定
+                double periodicTime = time % 2.0;
                 bool soundOn = false;
-                if (time < 0.8)
+                if (periodicTime < 0.8)
                 {
-                    int cycle = (int)(time / 0.2);
-                    double cycleTime = time - (cycle * 0.2);
+                    int cycle = (int)(periodicTime / 0.2);
+                    double cycleTime = periodicTime - (cycle * 0.2);
                     if (cycleTime < 0.1)
                     {
                         soundOn = true;
@@ -137,7 +133,27 @@ namespace PortableAlarmClock
                 {
                     // Sine Wave
                     double angle = 2.0 * Math.PI * frequency * time;
-                    value = (short)(Math.Sin(angle) * 16000); // 16000 volume amplitude
+
+                    // 音量フェードインロジック:
+                    // 0.0s - 5.0s: 最大音量の 10% から 20% へ線形補間
+                    // 5.0s - 15.0s: 最大音量の 20% から 100% へ線形補間
+                    // 15.0s - 30.0s: 最大音量 (100%)
+                    double volumeCoeff;
+                    if (time < 5.0)
+                    {
+                        volumeCoeff = 0.1 + (time / 5.0) * 0.1;
+                    }
+                    else if (time < 15.0)
+                    {
+                        volumeCoeff = 0.2 + ((time - 5.0) / 10.0) * 0.8;
+                    }
+                    else
+                    {
+                        volumeCoeff = 1.0;
+                    }
+
+                    double maxVolume = 16000.0;
+                    value = (short)(Math.Sin(angle) * maxVolume * volumeCoeff);
                 }
 
                 byte[] sampleBytes = BitConverter.GetBytes(value);
@@ -150,4 +166,4 @@ namespace PortableAlarmClock
         }
     }
 }
-// v1.00 20260617 23:40
+// v1.01 20260620 10:25

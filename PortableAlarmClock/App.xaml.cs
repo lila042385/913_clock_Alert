@@ -1,3 +1,5 @@
+// v1.03 20260620 10:07
+// 履歴: StartupUriの削除に伴う手動起動ロジックと--minimized引数による常駐起動判定の追加
 // v1.02 20260619 08:20 - Silent single instance with Named Pipe IPC
 using System;
 using System.IO;
@@ -57,7 +59,31 @@ namespace PortableAlarmClock
             // 4. Start Named Pipe listener for second-instance signals
             StartPipeListener();
 
-            base.OnStartup(e);
+            // Create MainWindow manually without base.OnStartup(e) to prevent automatic showing
+            var mainWindow = new MainWindow();
+            this.MainWindow = mainWindow;
+
+            // Check command line arguments for minimized start
+            bool startMinimized = false;
+            foreach (var arg in e.Args)
+            {
+                if (arg.Equals("--minimized", StringComparison.OrdinalIgnoreCase))
+                {
+                    startMinimized = true;
+                    break;
+                }
+            }
+
+            if (startMinimized)
+            {
+                mainWindow.WindowState = WindowState.Minimized;
+                mainWindow.Hide();
+                Logger.Info("App started minimized to system tray via command line.");
+            }
+            else
+            {
+                mainWindow.Show();
+            }
         }
 
         protected override void OnExit(ExitEventArgs e)
@@ -175,6 +201,6 @@ namespace PortableAlarmClock
         }
     }
 }
-// v1.02 20260619 08:20 - Silent single instance with Named Pipe IPC
+// v1.03 20260620 10:07
 
 

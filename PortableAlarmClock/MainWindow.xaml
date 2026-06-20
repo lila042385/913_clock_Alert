@@ -1,3 +1,5 @@
+<!-- v1.05 20260620 10:20 -->
+<!-- 履歴: 設定タブ（歯車ボタン）を左メニュー最下部に追加 -->
 <!-- v1.04 20260620 00:52 - Custom titlebar with tray button -->
 <Window x:Class="PortableAlarmClock.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -213,6 +215,18 @@
                             <TextBlock Text="&#x30B9;&#x30C8;&#x30C3;&#x30D7;&#x30A6;&#x30A9;&#x30C3;&#x30C1;" FontSize="14" VerticalAlignment="Center"/>
                         </StackPanel>
                     </RadioButton>
+
+                    <!-- Settings Tab -->
+                    <RadioButton x:Name="SettingsNavButton" 
+                                 Style="{StaticResource NavButtonStyle}"
+                                 Checked="NavButton_Checked"
+                                 Tag="Settings">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="18" 
+                                       VerticalAlignment="Center" Width="28"/>
+                            <TextBlock Text="設定" FontSize="14" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </RadioButton>
                 </StackPanel>
             </Border>
 
@@ -221,4 +235,4 @@
         </Grid>
     </Grid>
 </Window>
-<!-- v1.04 20260620 00:52 - Custom titlebar with tray button -->
+<!-- v1.05 20260620 10:20 -->

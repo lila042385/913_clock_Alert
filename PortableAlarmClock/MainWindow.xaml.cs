@@ -1,3 +1,5 @@
+// v1.06 20260620 10:20
+// 履歴: 左メニューの設定タブへの遷移処理（SettingsViewのインスタンス生成・割当）を追加
 // v1.05 20260620 00:52 - Custom titlebar handlers + balloon notification
 using System;
 using System.Windows;
@@ -18,6 +20,7 @@ namespace PortableAlarmClock
         private AlarmView? _alarmView;
         private TimerView? _timerView;
         private StopwatchView? _stopwatchView;
+        private SettingsView? _settingsView;
 
         public MainWindow()
         {
@@ -119,6 +122,10 @@ namespace PortableAlarmClock
                 case "Stopwatch":
                     _stopwatchView ??= new StopwatchView();
                     ContentArea.Content = _stopwatchView;
+                    break;
+                case "Settings":
+                    _settingsView ??= new SettingsView();
+                    ContentArea.Content = _settingsView;
                     break;
             }
         }
@@ -270,5 +277,5 @@ namespace PortableAlarmClock
         #endregion
     }
 }
-// v1.05 20260620 00:52 - Custom titlebar handlers + balloon notification
+// v1.06 20260620 10:20
 // v1.04 20260619 08:24 - Shell with tab navigation
