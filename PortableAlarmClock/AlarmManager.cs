@@ -1,3 +1,5 @@
+// v1.03 20260620 09:46
+// 履歴: アラーム編集時にUIが即時更新されない不具合を、インスタンス差し替え方式に変更することで修正
 // v1.02 20260617 23:59
 using System;
 using System.Collections.Generic;
@@ -165,15 +167,11 @@ namespace PortableAlarmClock
                 var existing = Alarms.FirstOrDefault(a => a.Id == alarm.Id);
                 if (existing != null)
                 {
-                    existing.Hour = alarm.Hour;
-                    existing.Minute = alarm.Minute;
-                    existing.Title = alarm.Title;
-                    existing.Weekdays = alarm.Weekdays;
-                    existing.IsEnabled = alarm.IsEnabled;
-                    existing.SoundName = alarm.SoundName;
-                    existing.SnoozeMinutes = alarm.SnoozeMinutes;
-                    existing.UpdatedAt = DateTime.Now;
-                    
+                    int index = Alarms.IndexOf(existing);
+                    if (index >= 0)
+                    {
+                        Alarms[index] = alarm;
+                    }
                     SaveAlarms();
                     Logger.Info($"Updated alarm: {alarm.Id}");
                 }
@@ -337,4 +335,4 @@ namespace PortableAlarmClock
         }
     }
 }
-// v1.02 20260617 23:59
+// v1.03 20260620 09:46
